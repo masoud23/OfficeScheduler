@@ -1,0 +1,15 @@
+ #*
+This is a velocity template that is intended to send an email.
+*#
+<html>
+    <head>
+       <title>Welcome to Scheduler Website</title>
+    </head>
+    <body>
+        <p>Thank you for joining our site.  We are pleased that you are here.</p>
+        <p>this is what you sent us, in case anything is wrong, please come back and fix it.</p>
+        <p>Your Username: ${account.username}</p>
+        <p>Your Password: ${account.password}</p>
+
+    </body>
+</html>
