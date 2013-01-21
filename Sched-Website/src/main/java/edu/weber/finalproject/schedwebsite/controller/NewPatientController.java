@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.springframework.validation.BindException;
+import org.springframework.validation.ObjectError;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
@@ -48,24 +49,30 @@ public class NewPatientController extends CancellableFormController {
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
         ModelAndView mav = new ModelAndView(getSuccessView(), errors.getModel());
         Patient patient = (Patient) command;
+        boolean isDuplicate = manager.checkExistingUserNames(patient.getUsername());
+        if(isDuplicate) {
+                errors.rejectValue("username", "already in use", "User name is already in use!");
+                showForm(request, errors, getFormView());
+        }        
         Validator patientValidator = new PatientValidator();
         patientValidator.validate(patient, errors.getBindingResult());
-        if(manager.checkExistingUserNames(patient.getUsername())) {
-                errors.rejectValue("username", "already in use", "User name is already in use!");
-        }
+        
+            
         if(errors.getBindingResult().hasErrors()){
             showForm(request, errors, getFormView());
         }
         
-        int success = manager.save(patient);
-        if(success > 0) {
-            mav.addObject("message", "Your profile was successfully saved");
-            Map emailModel = new HashMap();
-            emailModel.put("account", (Patient) command);
-            eman.sendEmail(emailModel, "properties/newAccountEmail.vm", patient.getEmail(), "team@sched.com", "Welcome to our app.", true);
-        }
-        else {
-            mav.addObject("message", "There was a problem saving your profile.  Please try again.");
+        if(!isDuplicate) {
+            int success = manager.save(patient);
+            if(success > 0) {
+                mav.addObject("message", "Your profile was successfully saved");
+                Map emailModel = new HashMap();
+                emailModel.put("account", (Patient) command);
+                eman.sendEmail(emailModel, "properties/newAccountEmail.vm", patient.getEmail(), "team@sched.com", "Welcome to our app.", true);
+            }
+            else {
+                mav.addObject("message", "There was a problem saving your profile.  Please try again.");
+            }
         }
         return mav;
         

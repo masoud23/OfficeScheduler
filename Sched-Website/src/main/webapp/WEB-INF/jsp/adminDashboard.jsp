@@ -9,9 +9,9 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Admin Dashboard</title>
+        <title>JSP Page</title>
     </head>
     <body>
-        <h1>Admin name is: ${msg}</h1>
+        <h1>Hello World!</h1>
     </body>
 </html>

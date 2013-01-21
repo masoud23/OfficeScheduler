@@ -24,12 +24,6 @@ public class ExamDaoJdbc implements ExamDAO{
     private SimpleJdbcTemplate jdbc;
     
     private static final String ALL_FIELDS = "id, resource_id, name, code, price , active, description, duration_mins ";
-    private static final String ALL_MEMBERS = ":id, :name, :code, :price, :active";
-    private static final String UPDATE_STRING = "id=:id, name=:name, code=:code, price=:price, active=:active";
-    
-    private static final String INSERT_EXAM = "INSERT INTO exam (" + ALL_FIELDS.replaceFirst("id,", "") + ") VALUES ("+ ALL_MEMBERS.replaceFirst(":id,", "") + ")";
-    private static final String UPDATE_EXAM = "UPDATE exam SET " + UPDATE_STRING + " WHERE id = :id";
-    private static final String DELETE_EXAM = "DELETE FROM exam WHERE id = ?";
     
     public ExamDaoJdbc(SimpleJdbcTemplate jdbc) {
         this.jdbc = jdbc;
@@ -51,6 +45,14 @@ public class ExamDaoJdbc implements ExamDAO{
         StringBuilder sql = new StringBuilder();
         sql.append(getAllExamsString());
         sql.append(" WHERE active = ?");
+        return sql.toString();
+    }
+    
+    private String getActiveExamsByResourceSQL() {
+        StringBuilder sql = new StringBuilder();
+        sql.append(getAllExamsString());
+        sql.append(" WHERE active = ?");
+        sql.append(" AND resource_id ?");
         return sql.toString();
     }
     
@@ -104,6 +106,11 @@ public class ExamDaoJdbc implements ExamDAO{
     }
     
     @Override
+    public List<Exam> getActiveExamsByResource(boolean active, int resourceId) {
+        return jdbc.query(getActiveExamsByResourceSQL(), mapper, active, resourceId);
+    }
+    
+    @Override
     public int addExam(Exam exam) {
         SqlParameterSource param = new BeanPropertySqlParameterSource(exam);
         if (exam.getId()==0){
@@ -139,5 +146,5 @@ public class ExamDaoJdbc implements ExamDAO{
             exam.setResourceId(rs.getInt("resource_id"));
             return exam;
         }
-   }; 
+   };
 }

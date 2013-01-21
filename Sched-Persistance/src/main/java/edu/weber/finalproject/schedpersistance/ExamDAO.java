@@ -19,6 +19,8 @@ public interface ExamDAO {
     
     List<Exam> getExamsByActive(boolean active);
     
+    List<Exam> getActiveExamsByResource(boolean active, int resourceId);
+    
     int addExam(Exam exam);
     
     int updateExam(Exam exam);

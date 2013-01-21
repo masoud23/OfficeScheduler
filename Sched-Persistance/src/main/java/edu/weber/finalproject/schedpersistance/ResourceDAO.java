@@ -17,6 +17,8 @@ public interface ResourceDAO {
     
     List<Resource> getResources();
     
+    List<Resource> getResourcesByOffice(int officeId);
+    
     int addResource(Resource resource);
     
     int updateResource(Resource resource);

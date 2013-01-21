@@ -43,6 +43,13 @@ public class ResourceDaoJdbc implements ResourceDAO{
         return sql.toString();
     }
     
+    private String getResourcesByOfficeSQL() {
+        StringBuilder sql = new StringBuilder();
+        sql.append(getResourcesSQL());
+        sql.append(" WHERE office_id = ?");
+        return sql.toString();
+    }
+    
     private String insertResourceSQL() {
         StringBuilder sql = new StringBuilder();
         sql.append("INSERT INTO Resources (");
@@ -72,6 +79,11 @@ public class ResourceDaoJdbc implements ResourceDAO{
         return jdbc.query(getResourcesSQL(), mapper);
     }
 
+    @Override
+    public List<Resource> getResourcesByOffice(int officeId) {
+        return jdbc.query(getResourcesByOfficeSQL(), mapper, officeId);
+    }
+    
     @Override
     public int addResource(Resource resource) {
         SqlParameterSource param = new BeanPropertySqlParameterSource(resource);
@@ -104,5 +116,5 @@ public class ResourceDaoJdbc implements ResourceDAO{
             resource.setName(rs.getString("name"));
             return resource;
         }
-   }; 
+   };
 }

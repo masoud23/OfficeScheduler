@@ -4,6 +4,7 @@
  */
 package edu.weber.finalproject.schedwebsite.validator;
 
+import edu.weber.finalproject.schedmanager.PatientManager;
 import edu.weber.finalproject.schedschema.Patient;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -17,7 +18,11 @@ import org.springframework.web.servlet.ModelAndView;
 public class PatientValidator implements Validator{
 
     private static final int MINIMUM_PASSWORD_LENGTH = 6;
+    private PatientManager patMan;
     
+    public void setPatMan(PatientManager patMan) {
+        this.patMan = patMan;
+}
     @Override
     public boolean supports(Class<?> clazz) {
         return Patient.class.isAssignableFrom(clazz);
@@ -34,8 +39,8 @@ public class PatientValidator implements Validator{
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "city", "required.field", "City cannot be blank");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "state", "required.field", "State cannot be blank");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "zip", "required.field", "Zipcode cannot be blank");
+        Patient temp = (Patient)o;
         if(!errors.hasErrors()) {
-            Patient temp = (Patient)o;
             String password = temp.getPassword();
             //lets make sure the password is long enough for our policy.
             if (password != null && password.trim().length() < MINIMUM_PASSWORD_LENGTH) {
@@ -44,7 +49,11 @@ public class PatientValidator implements Validator{
                         "The password must be at least [" + MINIMUM_PASSWORD_LENGTH + "] characters in length.");
             }
         }
-        
+        if(patMan.checkExistingUserNames(temp.getUsername())) {
+            errors.rejectValue("username", "username.duplicate",
+                        new Object[]{temp.getUsername()},
+                        "Username is already in use!");
+        }
     }
     
 }

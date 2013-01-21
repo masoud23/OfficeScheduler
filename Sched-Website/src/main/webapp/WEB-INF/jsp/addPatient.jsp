@@ -13,6 +13,19 @@
     <meta charset="UTF-8" />
     <link rel="stylesheet" type="text/css" href="css/reset.css">
     <link rel="stylesheet" type="text/css" href="css/structure.css">
+    <script type="text/javascript" src="/js/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript">        
+        function checkUsernameAvailable() {
+            $.ajax({
+                type: "POST",
+                url: "/Sched-WebService/reg/username/available",
+                data: "un=$('#username').val()",
+                success: function (response) {
+                    //show message on false
+                }
+            });
+        }
+    </script>
 </head>
 <body>
     <div id="head">
@@ -24,7 +37,7 @@
          <div>
              <fieldset class="boxBody">
          <form:form method="POST" commandName="patient" action="" class="box">
-             <form:errors path="*" id="errors"/>   
+<!--             <form:errors path="*" id="errors"/>   -->
    <table id="chad">
     <caption>Please Register Here</caption>
     <tr>
@@ -32,12 +45,14 @@
     </tr>
     <tr>
         <td style="vertical-align: middle" align="center" width="100px">User Name :</td>
-        <td><form:input path="username" /></td>
+        <td><form:input path="username" onchange="checkUsernameAvailable()" /></td>
+        <td><form:errors path="username" cssClass="error" /></td>
         <td width="30px">&nbsp;</td>
     </tr>
     <tr>
         <td style="vertical-align: middle" align="center" width="100px">Password :</td>
         <td><form:password path="password" /></td>
+        <td><form:errors path="password" cssClass="error" /><td>
     </tr>
 
     <tr>

@@ -6,6 +6,7 @@ package edu.weber.finalproject.schedpersistance.data;
 
 import edu.weber.finalproject.schedpersistance.PatientDAO;
 import edu.weber.finalproject.schedschema.Patient;
+import edu.weber.finalproject.schedschema.User;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -35,7 +36,7 @@ public class PatientDaoJdbc implements PatientDAO{
     //********************************************************************************************************************
     private String checkUserNames() {
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT * FROM Patient ");
+        sql.append("SELECT Count(*) FROM Patient ");
         sql.append("WHERE username = ?");
         return sql.toString();
     }
@@ -176,11 +177,8 @@ public class PatientDaoJdbc implements PatientDAO{
      */
     @Override
     public boolean checkExistingUserNames(String userName) {
-        List<Patient> patientList = jdbc.query(checkUserNames(), mapper, userName);
-        if(patientList.isEmpty())
-            return true;
-        else
-            return false;
+        int patientCount = jdbc.queryForInt(checkUserNames(), userName);//.query(checkUserNames());//, mapper, userName);
+        return patientCount > 0;
     }
     
     private RowMapper<Patient> mapper = new ParameterizedRowMapper<Patient>(){
@@ -203,7 +201,6 @@ public class PatientDaoJdbc implements PatientDAO{
             patient.setState(rs.getString(13));
             patient.setZip(rs.getString(14));
             return patient;
-        }
-    
+        }  
    };
 }
